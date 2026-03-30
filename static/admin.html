@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Admin Oráculo</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #0a0f1f;
+    color: white;
+    padding: 20px;
+}
+
+h1 {
+    color: #38bdf8;
+}
+
+.card {
+    background: #111827;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 10px;
+    border-bottom: 1px solid #333;
+}
+
+th {
+    color: #38bdf8;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>Painel Admin</h1>
+
+<div class="card">
+    <h3>Resumo</h3>
+    <p>Total usuários: <span id="totalUsuarios"></span></p>
+    <p>Total registros: <span id="totalRegistros"></span></p>
+</div>
+
+<div class="card">
+    <h3>Usuários</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Email</th>
+                <th>Uso</th>
+                <th>Ações</th>
+                <th>Limite</th>
+            </tr>
+        </thead>
+        <tbody id="usuariosTabela"></tbody>
+    </table>
+</div>
+
+<script>
+async function carregarAdmin() {
+    const res = await fetch("/admin");
+    const data = await res.json();
+
+    document.getElementById("totalUsuarios").innerText = data.total_usuarios;
+    document.getElementById("totalRegistros").innerText = data.total_registros;
+
+    let html = "";
+
+    data.usuarios.forEach(u => {
+        let estiloLinha = "";
+
+        if (u.status === "sem_credito") {
+            estiloLinha = "background: rgba(248, 113, 113, 0.12);";
+        } else if (u.status === "quase_no_limite") {
+            estiloLinha = "background: rgba(251, 191, 36, 0.12);";
+        }
+
+        html += `
+            <tr style="${estiloLinha}">
+                <td>${u.id}</td>
+                <td>${u.email}</td>
+                <td>${u.uso_api}</td>
+                <td>
+                    <button onclick="darCredito(${u.id})">+10</button>
+                    <button onclick="bloquear(${u.id})">Bloquear</button>
+                </td>
+                <td>${u.limite_api}</td>
+            </tr>
+        `;
+    });
+
+    document.getElementById("usuariosTabela").innerHTML = html;
+}
+
+carregarAdmin();
+async function darCredito(userId) {
+    await fetch(`/admin/add-credito/${userId}?valor=10`, {
+        method: "POST"
+    });
+
+    carregarAdmin();
+}
+
+async function bloquear(userId) {
+    await fetch(`/admin/bloquear/${userId}`, {
+        method: "POST"
+    });
+
+    carregarAdmin();
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Passaporte Oráculo</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      color: white;
+      background:
+        radial-gradient(circle at top left, rgba(0, 212, 255, 0.12), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(0, 212, 255, 0.10), transparent 25%),
+        linear-gradient(135deg, #050b18, #081121 45%, #0d1830 100%);
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .hero {
+      padding: 90px 0 70px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 30px;
+      align-items: center;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: rgba(0, 212, 255, 0.10);
+      border: 1px solid rgba(0, 212, 255, 0.18);
+      color: #7dd3fc;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 56px;
+      line-height: 1.05;
+      margin: 0 0 20px;
+      color: #eaf4ff;
+    }
+
+    .hero p {
+      font-size: 18px;
+      line-height: 1.6;
+      color: #a9b8d1;
+      margin: 0 0 28px;
+      max-width: 720px;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary, .btn-secondary {
+      display: inline-block;
+      text-decoration: none;
+      font-weight: bold;
+      border-radius: 14px;
+      padding: 14px 22px;
+      transition: 0.2s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(90deg, #00d4ff, #1d9bf0);
+      color: #03111f;
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.04);
+      color: #dce9ff;
+      border: 1px solid rgba(255,255,255,0.10);
+    }
+
+    .btn-primary:hover, .btn-secondary:hover {
+      transform: translateY(-1px);
+      opacity: 0.96;
+    }
+
+    .hero-card {
+      background: rgba(13, 20, 38, 0.92);
+      border: 1px solid rgba(0, 212, 255, 0.10);
+      border-radius: 24px;
+      padding: 26px;
+      box-shadow: 0 0 30px rgba(0, 212, 255, 0.06);
+    }
+
+    .hero-card h3 {
+      margin: 0 0 12px;
+      color: #7dd3fc;
+      font-size: 22px;
+    }
+
+    .hero-card .line {
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      color: #d7e5fb;
+    }
+
+    .hero-card .line:last-child {
+      border-bottom: none;
+    }
+
+    .section {
+      padding: 26px 0 80px;
+    }
+
+    .section h2 {
+      text-align: center;
+      margin: 0 0 12px;
+      font-size: 40px;
+      color: #eaf4ff;
+    }
+
+    .section .sub {
+      text-align: center;
+      max-width: 760px;
+      margin: 0 auto 38px;
+      color: #9fb0c9;
+      line-height: 1.6;
+      font-size: 17px;
+    }
+
+    .cards-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .card {
+      background: rgba(13, 20, 38, 0.92);
+      border: 1px solid rgba(0, 212, 255, 0.10);
+      border-radius: 22px;
+      padding: 24px;
+      box-shadow: 0 0 24px rgba(0, 212, 255, 0.05);
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: 22px;
+      color: #7dd3fc;
+    }
+
+    .card p {
+      margin: 0;
+      color: #b6c5de;
+      line-height: 1.6;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      margin-top: 22px;
+    }
+
+    .step {
+      background: rgba(13, 20, 38, 0.92);
+      border: 1px solid rgba(0, 212, 255, 0.10);
+      border-radius: 22px;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .step-number {
+      width: 44px;
+      height: 44px;
+      line-height: 44px;
+      border-radius: 50%;
+      margin: 0 auto 12px;
+      background: rgba(0, 212, 255, 0.12);
+      color: #7dd3fc;
+      font-weight: bold;
+    }
+
+    .plans {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .plan {
+      background: rgba(13, 20, 38, 0.92);
+      border: 1px solid rgba(0, 212, 255, 0.10);
+      border-radius: 24px;
+      padding: 26px;
+    }
+
+    .plan.featured {
+      border: 1px solid rgba(34, 197, 94, 0.35);
+      box-shadow: 0 0 26px rgba(34, 197, 94, 0.08);
+    }
+
+    .plan h3 {
+      margin: 0 0 10px;
+      font-size: 26px;
+      color: #eaf4ff;
+    }
+
+    .plan-price {
+      font-size: 34px;
+      color: #7dd3fc;
+      font-weight: bold;
+      margin-bottom: 14px;
+    }
+
+    .plan ul {
+      padding-left: 18px;
+      color: #c6d4ea;
+      line-height: 1.8;
+      min-height: 150px;
+    }
+
+    .cta {
+      text-align: center;
+      padding: 70px 0 90px;
+    }
+
+    .cta-box {
+      background: linear-gradient(145deg, rgba(13,20,38,0.95), rgba(8,16,30,0.98));
+      border: 1px solid rgba(0, 212, 255, 0.12);
+      border-radius: 28px;
+      padding: 42px 28px;
+      box-shadow: 0 0 30px rgba(0, 212, 255, 0.06);
+    }
+
+    .cta h2 {
+      margin: 0 0 14px;
+      font-size: 42px;
+    }
+
+    .cta p {
+      color: #aebed6;
+      max-width: 760px;
+      margin: 0 auto 24px;
+      line-height: 1.6;
+      font-size: 17px;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 22px;
+      color: #7186a8;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    @media (max-width: 980px) {
+      .hero-grid, .cards-3, .plans, .steps {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 40px;
+      }
+
+      .section h2, .cta h2 {
+        font-size: 32px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <section class="hero">
+    <div class="container">
+      <div class="hero-grid">
+        <div>
+          <div class="badge">🔐 Autenticidade digital + antifraude em tempo real</div>
+          <h1>Prove que seu conteúdo é original e detecte fraudes antes que virem problema.</h1>
+          <p>
+            O Passaporte Oráculo registra, protege e valida arquivos digitais com selo único,
+            certidão técnica, DNA embutido e rastreamento inteligente de comportamento suspeito.
+          </p>
+
+          <div class="btn-row">
+            <a href="/" class="btn-primary">Entrar no sistema</a>
+            <a href="#planos" class="btn-secondary">Ver planos</a>
+          </div>
+        </div>
+
+        <div class="hero-card">
+          <h3>O que o Oráculo faz hoje</h3>
+          <div class="line">✅ Selagem com hash SHA-256</div>
+          <div class="line">✅ Certidão digital em PDF</div>
+          <div class="line">✅ DNA para imagem, PDF e DOCX</div>
+          <div class="line">✅ Validação pública por link e QR</div>
+          <div class="line">✅ Rastreamento e painel antifraude</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2>Por que o Passaporte Oráculo existe</h2>
+      <p class="sub">
+        Hoje, conteúdos, documentos e materiais digitais podem ser copiados, adulterados
+        ou usados em golpes. O Oráculo cria uma camada real de prova, rastreabilidade
+        e confiança.
+      </p>
+
+      <div class="cards-3">
+        <div class="card">
+          <h3>Proteção</h3>
+          <p>Registre seus arquivos antes de publicar, enviar ou compartilhar. O sistema gera prova técnica e validação pública.</p>
+        </div>
+
+        <div class="card">
+          <h3>Rastreio</h3>
+          <p>Descubra quando um selo é consultado, como está sendo acessado e se existe comportamento suspeito em torno dele.</p>
+        </div>
+
+        <div class="card">
+          <h3>Fraude</h3>
+          <p>O Oráculo identifica padrões anormais, calcula score de risco e mostra alertas para acesso suspeito e uso indevido.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2>Como funciona</h2>
+      <p class="sub">
+        O processo foi desenhado para ser simples por fora e forte por dentro.
+      </p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-number">1</div>
+          <h3>Envie</h3>
+          <p>Faça upload do seu arquivo no sistema.</p>
+        </div>
+
+        <div class="step">
+          <div class="step-number">2</div>
+          <h3>Sele</h3>
+          <p>O Oráculo gera hash, selo, QR e certidão.</p>
+        </div>
+
+        <div class="step">
+          <div class="step-number">3</div>
+          <h3>Proteja</h3>
+          <p>Arquivos compatíveis recebem DNA digital.</p>
+        </div>
+
+        <div class="step">
+          <div class="step-number">4</div>
+          <h3>Valide</h3>
+          <p>Use o link público e o painel para acompanhar risco e autenticidade.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="planos">
+    <div class="container">
+      <h2>Planos</h2>
+      <p class="sub">
+        Comece com o gratuito e evolua conforme a necessidade do seu volume e da sua operação.
+      </p>
+
+      <div class="plans">
+        <div class="plan">
+          <h3>Starter</h3>
+          <div class="plan-price">Grátis</div>
+          <ul>
+            <li>10 selagens</li>
+            <li>Validação pública</li>
+            <li>Certidão digital</li>
+            <li>Recursos básicos</li>
+          </ul>
+          <a href="/" class="btn-secondary">Começar</a>
+        </div>
+
+        <div class="plan featured">
+          <h3>Creator</h3>
+          <div class="plan-price">R$ 29,90</div>
+          <ul>
+            <li>Mais selagens</li>
+            <li>DNA completo</li>
+            <li>Painel de fraude</li>
+            <li>Monitoramento ampliado</li>
+          </ul>
+          <a href="/" class="btn-primary">Quero esse plano</a>
+        </div>
+
+        <div class="plan">
+          <h3>Business</h3>
+          <div class="plan-price">Sob consulta</div>
+          <ul>
+            <li>API</li>
+            <li>Uso escalável</li>
+            <li>Operação profissional</li>
+            <li>Suporte dedicado</li>
+          </ul>
+          <a href="/" class="btn-secondary">Falar com a equipe</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta">
+    <div class="container">
+      <div class="cta-box">
+        <h2>Seu arquivo precisa de prova. Não de sorte.</h2>
+        <p>
+          O Passaporte Oráculo foi criado para quem precisa proteger conteúdo,
+          registrar autoria e ter evidência digital confiável.
+        </p>
+        <div class="btn-row" style="justify-content:center;">
+          <a href="/" class="btn-primary">Entrar no sistema</a>
+          <a href="#planos" class="btn-secondary">Ver planos</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="footer">
+    Passaporte Oráculo — autenticidade digital, proteção real.
+  </div>
+
+</body>
+</html>

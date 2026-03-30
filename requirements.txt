@@ -1,0 +1,13 @@
+
+fastapi
+uvicorn[standard]
+sqlalchemy
+python-multipart
+email-validator
+reportlab
+qrcode
+pillow
+pypdf
+python-docx
+bcrypt
+python-3.10.11

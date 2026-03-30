@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Passaporte Oráculo</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(0, 212, 255, 0.12), transparent 28%),
+                radial-gradient(circle at bottom right, rgba(0, 212, 255, 0.10), transparent 25%),
+                linear-gradient(135deg, #050b18, #081121 45%, #0d1830 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .hidden { display: none !important; }
+        .login-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .login-card {
+            width: 100%;
+            max-width: 480px;
+            background: rgba(13, 20, 38, 0.92);
+            border: 1px solid rgba(0, 212, 255, 0.14);
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: 0 0 40px rgba(0, 212, 255, 0.08);
+        }
+        .brand {
+            text-align: center;
+            margin-bottom: 26px;
+        }
+        .brand h1 {
+            margin: 0;
+            color: #00d4ff;
+            font-size: 42px;
+        }
+        .brand p {
+            margin: 10px 0 0;
+            color: #a8b6cf;
+            line-height: 1.5;
+        }
+        .section-title {
+            margin: 0 0 10px;
+            font-size: 28px;
+            color: #7dd3fc;
+        }
+        .section-sub {
+            color: #9fb0c9;
+            line-height: 1.5;
+            margin-bottom: 18px;
+        }
+        input[type="email"],
+        input[type="password"],
+        input[type="file"] {
+            width: 100%;
+            background: #0b1328;
+            color: white;
+            border: 1px solid #24324d;
+            border-radius: 14px;
+            padding: 14px 15px;
+            margin-top: 10px;
+            outline: none;
+        }
+        button {
+            border: none;
+            border-radius: 14px;
+            padding: 12px 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+        button:hover {
+            transform: translateY(-1px);
+            opacity: 0.95;
+        }
+        .btn-primary { background: #00d4ff; color: #001018; }
+        .btn-secondary { background: #1b2740; color: #e2e8f0; }
+        .btn-danger { background: #dc2626; color: white; }
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+        .status-box, .result {
+            margin-top: 16px;
+            background: #0b1328;
+            border: 1px solid #1b2942;
+            border-radius: 16px;
+            padding: 16px;
+            min-height: 70px;
+            color: #dbe7ff;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .ok { color: #4ade80; font-weight: bold; }
+        .erro { color: #f87171; font-weight: bold; }
+        .app-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+        .sidebar {
+            background: rgba(9, 16, 32, 0.94);
+            border-right: 1px solid rgba(0, 212, 255, 0.08);
+            padding: 24px 18px;
+        }
+        .sidebar-brand {
+            padding: 8px 10px 18px;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.08);
+            margin-bottom: 20px;
+        }
+        .sidebar-brand h2 {
+            margin: 0;
+            color: #00d4ff;
+            font-size: 30px;
+        }
+        .sidebar-brand p {
+            margin: 8px 0 0;
+            color: #8ca1c0;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        .nav-section-title {
+            color: #6f87a9;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 18px 10px 10px;
+        }
+        .nav-btn {
+            width: 100%;
+            text-align: left;
+            background: transparent;
+            color: #dbe7ff;
+            border: 1px solid transparent;
+            padding: 14px 14px;
+            border-radius: 14px;
+            margin-bottom: 8px;
+        }
+        .nav-btn.active {
+            background: rgba(0, 212, 255, 0.12);
+            border-color: rgba(0, 212, 255, 0.18);
+            color: #7dd3fc;
+        }
+        .sidebar-footer {
+            margin-top: 24px;
+            padding-top: 18px;
+            border-top: 1px solid rgba(0, 212, 255, 0.08);
+        }
+        .mini-user-box {
+            background: #0b1328;
+            border: 1px solid #1b2942;
+            border-radius: 16px;
+            padding: 14px;
+            margin-bottom: 12px;
+        }
+        .mini-user-box .label {
+            color: #7f95b6;
+            font-size: 12px;
+            margin-bottom: 6px;
+        }
+        .mini-user-box .value {
+            color: white;
+            font-weight: bold;
+            word-break: break-word;
+        }
+        .main-content { padding: 24px; }
+        .top-hero {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            align-items: stretch;
+            margin-bottom: 22px;
+        }
+        .welcome-card {
+            flex: 1;
+            background: rgba(13, 20, 38, 0.92);
+            border: 1px solid rgba(0, 212, 255, 0.10);
+            border-radius: 22px;
+            padding: 24px;
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.06);
+        }
+        .welcome-card h1 {
+            margin: 0 0 10px;
+            font-size: 36px;
+            color: #7dd3fc;
+        }
+        .welcome-card p {
+            margin: 0;
+            color: #a9b8d1;
+            line-height: 1.5;
+        }
+        .logout-wrap {
+            width: 180px;
+            display: flex;
+            align-items: stretch;
+        }
+        .logout-wrap button { width: 100%; }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+        .stat-card {
+            background: rgba(13, 20, 38, 0.92);
+            border: 1px solid rgba(0, 212, 255, 0.10);
+            border-radius: 20px;
+            padding: 18px;
+            box-shadow: 0 0 24px rgba(0, 212, 255, 0.05);
+        }
+        .stat-label {
+            color: #88a0c0;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+        .stat-value {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            word-break: break-word;
+        }
+        .panel { display: none; }
+        .panel.active { display: block; }
+        .card {
+            background: rgba(13, 20, 38, 0.92);
+            border: 1px solid rgba(0, 212, 255, 0.10);
+            border-radius: 22px;
+            padding: 22px;
+            box-shadow: 0 0 24px rgba(0, 212, 255, 0.05);
+        }
+        .panel-title {
+            margin: 0 0 10px;
+            font-size: 30px;
+            color: #7dd3fc;
+        }
+        .panel-subtitle {
+            color: #9fb0c9;
+            margin-bottom: 18px;
+            line-height: 1.5;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 20px;
+        }
+        .qr-box { text-align: center; }
+        .qr-box img {
+            display: block;
+            margin: 10px auto 0;
+            max-width: 240px;
+            width: 100%;
+            background: white;
+            padding: 10px;
+            border-radius: 16px;
+        }
+        .registro-item {
+            background: #0b1328;
+            border: 1px solid #24324d;
+            border-radius: 16px;
+            padding: 14px;
+            margin-bottom: 12px;
+        }
+        .registro-item b { color: #7dd3fc; }
+        .api-box code {
+            display: block;
+            background: #0b1328;
+            border: 1px solid #24324d;
+            border-radius: 14px;
+            padding: 14px;
+            color: #e7f0ff;
+            white-space: pre-wrap;
+            word-break: break-word;
+            margin-top: 10px;
+        }
+        .big-highlight {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.10), rgba(0, 212, 255, 0.04));
+            border: 1px solid rgba(0, 212, 255, 0.14);
+            border-radius: 18px;
+            padding: 18px;
+            color: #d9e8ff;
+        }
+        @media (max-width: 1100px) {
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 900px) {
+            .app-layout { grid-template-columns: 1fr; }
+            .sidebar {
+                border-right: none;
+                border-bottom: 1px solid rgba(0, 212, 255, 0.08);
+            }
+            .top-hero { flex-direction: column; }
+            .logout-wrap { width: 100%; }
+        }
+        @media (max-width: 650px) {
+            .stats-grid { grid-template-columns: 1fr; }
+        }
+ 
+        .upgrade-box {
+            background: linear-gradient(145deg, #111827, #0b1220);
+            border: 1px solid rgba(56, 189, 248, 0.18);
+            border-radius: 18px;
+            padding: 28px 22px;
+            text-align: center;
+            box-shadow: 0 0 24px rgba(56, 189, 248, 0.08);
+        }
+
+        .upgrade-icon {
+            font-size: 34px;
+            margin-bottom: 8px;
+        }
+
+        .upgrade-title {
+            margin: 0 0 10px;
+            color: #f87171;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .upgrade-text {
+            color: #dbe7ff;
+            margin: 0 0 14px;
+            line-height: 1.5;
+        }
+
+        .upgrade-highlight {
+            background: rgba(56, 189, 248, 0.10);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            border-radius: 12px;
+            padding: 12px;
+            margin: 16px 0 18px;
+            color: #38bdf8;
+            font-weight: bold;
+        }
+
+        .btn-upgrade {
+            background: linear-gradient(90deg, #22c55e, #16a34a);
+            border: none;
+            border-radius: 12px;
+            padding: 14px 26px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .btn-upgrade:hover {
+            transform: translateY(-1px) scale(1.02);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loginScreen" class="login-screen">
+        <div class="login-card">
+            <div class="brand">
+                <h1>💎 Passaporte Oráculo</h1>
+                <p>Infraestrutura de autenticidade digital para conteúdo verificado.</p>
+            </div>
+
+            <h2 class="section-title">Entrar na Plataforma</h2>
+            <div class="section-sub">
+                Faça login para acessar seu painel premium, acompanhar uso da API, selar arquivos, consultar histórico e validar o DNA Oráculo.
+            </div>
+
+            <input type="email" id="email" placeholder="Digite seu e-mail">
+            <input type="password" id="senha" placeholder="Digite sua senha">
+
+            <div class="btn-row">
+                <button class="btn-primary" onclick="registrar()">Cadastrar</button>
+                <button class="btn-secondary" onclick="login()">Entrar</button>
+            </div>
+
+            <div id="statusLogin" class="status-box">Nenhuma ação realizada ainda.</div>
+        </div>
+    </div>
+
+    <div id="dashboardScreen" class="app-layout hidden">
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <h2>💎 Oráculo</h2>
+                <p>Plataforma de autenticidade digital contra falsificação de conteúdo.</p>
+            </div>
+
+            <div class="nav-section-title">Painel</div>
+            <button class="nav-btn active" onclick="abrirPainel('dashboardPanel', this)">Dashboard</button>
+            <button class="nav-btn" onclick="abrirPainel('selagemPanel', this)">Selagem</button>
+            <button class="nav-btn" onclick="abrirPainel('registrosPanel', this)">Registros</button>
+            <button class="nav-btn" onclick="abrirPainel('dnaPanel', this)">DNA Oráculo</button>
+            <button class="nav-btn" onclick="abrirPainel('fraudePanel', this)">Fraude</button>
+            <button class="nav-btn" onclick="abrirPainel('apiPanel', this)">API</button>
+
+            <div class="sidebar-footer">
+                <div class="mini-user-box">
+                    <div class="label">Cliente atual</div>
+                    <div id="clienteNomeSidebar" class="value">-</div>
+                </div>
+
+                <div class="mini-user-box">
+                    <div class="label">API Key</div>
+                    <div id="apiKeySidebar" class="value">-</div>
+                </div>
+
+                <button class="btn-danger" style="width: 100%;" onclick="logout()">Sair</button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="top-hero">
+                <div class="welcome-card">
+                    <h1>Bem-vindo ao Passaporte Oráculo</h1>
+                    <p>
+                        Seu conteúdo, sua origem, sua verdade. Agora com DNA Oráculo V1 para imagens:
+                        rastreabilidade invisível, prova técnica e validação de origem.
+                    </p>
+                </div>
+
+                <div class="logout-wrap">
+                    <button class="btn-danger" onclick="logout()">Sair</button>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Cliente</div>
+                    <div id="clienteNomeTopo" class="stat-value">-</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Plano</div>
+                    <div id="planoTopo" class="stat-value">-</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Uso da API</div>
+                    <div id="usoApiTopo" class="stat-value">0 / 0</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Saldo restante</div>
+                    <div id="saldoRestanteTopo" class="stat-value">0</div>
+                </div>
+            </div>
+
+            <section id="dashboardPanel" class="panel active">
+                <div class="card">
+                    <h2 class="panel-title">Dashboard Executivo</h2>
+                    <div class="panel-subtitle">
+                        Aqui você acompanha indicadores da conta, status de uso e disponibilidade do sistema.
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-label">Email</div>
+                            <div id="emailDashboard" class="stat-value">-</div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-label">Usuário ID</div>
+                            <div id="usuarioIdDashboard" class="stat-value">-</div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-label">Limite total</div>
+                            <div id="limiteApiDashboard" class="stat-value">-</div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-label">Restante</div>
+                            <div id="restanteApiDashboard" class="stat-value">-</div>
+                        </div>
+                    </div>
+
+                    <div id="dashboardMensagem" class="big-highlight">
+                        Painel carregado.
+                    </div>
+
+                    <div class="card" style="margin-top: 20px;">
+                        <h3 style="margin-top: 0; color: #7dd3fc;">Upgrade de Plano</h3>
+                        <div class="panel-subtitle">
+                            Escolha o plano para aumentar o limite de selagens da API.
+                        </div>
+
+                        <div class="btn-row">
+                            <button class="btn-secondary" onclick="fazerUpgradePlano('gratuito')">Plano Gratuito</button>
+                            <button class="btn-primary" onclick="fazerUpgradePlano('pro')">Upgrade para PRO</button>
+                            <button class="btn-primary" onclick="fazerUpgradePlano('business')">Upgrade para BUSINESS</button>
+                        </div>
+
+                        <div id="upgradeResultado" class="result">Nenhum upgrade realizado ainda.</div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="selagemPanel" class="panel">
+                <div class="grid-2">
+                    <div class="card">
+                        <h2 class="panel-title">Selagem Digital</h2>
+                        <div class="panel-subtitle">
+                            Envie um arquivo para gerar hash, selo, QR Code, certidão e, para imagens, uma cópia com DNA Oráculo invisível.
+                        </div>
+
+                        <input type="file" id="fileInput">
+
+                        <div class="btn-row">
+                            <button class="btn-primary" onclick="enviarArquivo()">Selar Arquivo</button>
+                        </div>
+
+                        <div id="resultado" class="result">Nenhum arquivo enviado ainda.</div>
+                    </div>
+
+                    <div class="card qr-box">
+                        <h2 class="panel-title">QR Code de Verificação</h2>
+                        <div class="panel-subtitle">
+                            O QR aparece aqui após a selagem e pode ser usado para validação pública.
+                        </div>
+
+                        <div id="qrArea" class="result">Aguardando selagem...</div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="registrosPanel" class="panel">
+                <div class="card">
+                    <h2 class="panel-title">Registros do Cliente</h2>
+                    <div class="panel-subtitle">
+                        Consulte todos os arquivos vinculados à sua conta autenticada.
+                    </div>
+
+                    <div class="btn-row">
+                        <button class="btn-primary" onclick="buscarRegistros()">Atualizar Registros</button>
+                    </div>
+
+                    <div id="listaRegistros" class="result">Nenhum registro carregado.</div>
+                </div>
+            </section>
+
+            <section id="dnaPanel" class="panel">
+                <div class="card">
+                    <h2 class="panel-title">DNA Oráculo</h2>
+                    <div class="panel-subtitle">
+                        Faça upload de uma imagem suspeita para verificar se ela contém DNA Oráculo e identificar o registro original.
+                        <br><br>
+                        <strong>Versão V1:</strong> suporte para imagens.
+                    </div>
+
+                    <input type="file" id="dnaFileInput">
+
+                    <div class="btn-row">
+                        <button class="btn-primary" onclick="verificarDNAUpload()">Verificar DNA da Imagem</button>
+                    </div>
+
+                    <div id="dnaResultado" class="result">Nenhuma verificação realizada ainda.</div>
+                </div>
+            </section>
+
+            <section id="fraudePanel" class="panel">
+                <div class="card">
+                    <h2 class="panel-title">Painel de Fraude</h2>
+                    <div class="panel-subtitle">
+                        Aqui você acompanha alertas críticos, suspeitos identificados e sinais de comportamento anômalo.
+                    </div>
+
+                    <div class="btn-row">
+                        <button class="btn-primary" onclick="carregarFraude()">Atualizar Fraude</button>
+                    </div>
+
+                    <div class="stats-grid" style="margin-top: 18px;">
+                        <div class="stat-card">
+                            <div class="stat-label">Total de suspeitos</div>
+                            <div id="fraudeTotalSuspeitos" class="stat-value">0</div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-label">Alertas críticos</div>
+                            <div id="fraudeAlertasCriticos" class="stat-value">0</div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-label">Maior score</div>
+                            <div id="fraudeMaiorScore" class="stat-value">0</div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-label">Status geral</div>
+                            <div id="fraudeStatusGeral" class="stat-value">OK</div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-top: 20px;">
+                        <h3 style="margin-top: 0; color: #7dd3fc;">Alertas Críticos</h3>
+                        <div id="fraudeAlertasLista" class="result">Nenhum alerta carregado.</div>
+                    </div>
+
+                    <div class="card" style="margin-top: 20px;">
+                        <h3 style="margin-top: 0; color: #7dd3fc;">Suspeitos Detectados</h3>
+                        <div id="fraudeSuspeitosLista" class="result">Nenhum suspeito carregado.</div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="apiPanel" class="panel">
+                <div class="card api-box">
+                    <h2 class="panel-title">Integração por API</h2>
+                    <div class="panel-subtitle">
+                        Use sua chave para conectar o Oráculo a sistemas externos e automatizar a selagem.
+                    </div>
+
+                    <div id="statusApi" class="result">Carregando consumo da API...</div>
+
+                    <h3>Sua API Key</h3>
+                    <code id="apiKeyBox">Ainda não carregada.</code>
+
+                    <h3>Exemplo de chamada</h3>
+                    <code>POST /api/selar
+x-api-key: SUA_API_KEY
+arquivo: arquivo.jpg</code>
+                </div>
+            </section>
+        </main>
+    </div>
+
+<script>
+    let tokenSessao = localStorage.getItem("token_sessao") || "";
+    let usuarioId = localStorage.getItem("usuario_id") || "";
+    let usuarioEmail = localStorage.getItem("usuario_email") || "";
+    let apiKey = localStorage.getItem("api_key") || "";
+
+    function abrirPainel(panelId, botao) {
+        document.querySelectorAll(".panel").forEach(panel => panel.classList.remove("active"));
+        document.querySelectorAll(".nav-btn").forEach(btn => btn.classList.remove("active"));
+        document.getElementById(panelId).classList.add("active");
+        botao.classList.add("active");
+    }
+
+    function mostrarTelaCorreta() {
+        const loginScreen = document.getElementById("loginScreen");
+        const dashboardScreen = document.getElementById("dashboardScreen");
+
+        if (tokenSessao) {
+            loginScreen.classList.add("hidden");
+            dashboardScreen.classList.remove("hidden");
+        } else {
+            dashboardScreen.classList.add("hidden");
+            loginScreen.classList.remove("hidden");
+        }
+    }
+
+    async function registrar() {
+        const email = document.getElementById("email").value.trim();
+        const senha = document.getElementById("senha").value.trim();
+
+        if (!email || !senha) {
+            document.getElementById("statusLogin").innerHTML = '<span class="erro">Preencha e-mail e senha.</span>';
+            return;
+        }
+
+        const res = await fetch(`/registrar?email=${encodeURIComponent(email)}&senha=${encodeURIComponent(senha)}`, {
+            method: "POST"
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            document.getElementById("mensagemLogin").innerHTML = `<span class="erro">${data.detail || "Erro ao cadastrar."}</span>`;
+            return;
+        }
+
+        document.getElementById("mensagemLogin").innerHTML = `
+            <span style="color:#4ade80;">
+                Cadastro realizado. Verifique seu email e confirme sua conta antes de entrar.
+            </span>
+        `;
+
+        if (res.ok) {
+            document.getElementById("statusLogin").innerHTML = '<span class="ok">Usuário criado com sucesso.</span> Agora faça login.';
+        } else {
+            document.getElementById("statusLogin").innerHTML = `<span class="erro">Erro: ${data.detail}</span>`;
+        }
+    }
+
+    async function login() {
+        const email = document.getElementById("email").value.trim();
+        const senha = document.getElementById("senha").value.trim();
+
+        if (!email || !senha) {
+            document.getElementById("statusLogin").innerHTML = '<span class="erro">Preencha e-mail e senha.</span>';
+            return;
+        }
+
+        const res = await fetch(`/login?email=${encodeURIComponent(email)}&senha=${encodeURIComponent(senha)}`, {
+            method: "POST"
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            document.getElementById("statusLogin").innerHTML = `<span class="erro">Erro: ${data.detail}</span>`;
+            return;
+        }
+
+        tokenSessao = data.token;
+        usuarioId = data.usuario_id;
+        usuarioEmail = data.email;
+        apiKey = data.api_key || "";
+
+        localStorage.setItem("token_sessao", tokenSessao);
+        localStorage.setItem("usuario_id", usuarioId);
+        localStorage.setItem("usuario_email", usuarioEmail);
+        localStorage.setItem("api_key", apiKey);
+
+        mostrarTelaCorreta();
+        preencherDadosUsuario();
+        await carregarStatusApi();
+        await buscarRegistros();
+    }
+
+    function logout() {
+        localStorage.clear();
+        tokenSessao = "";
+        usuarioId = "";
+        usuarioEmail = "";
+        apiKey = "";
+        mostrarTelaCorreta();
+    }
+
+    function preencherDadosUsuario() {
+        document.getElementById("clienteNomeSidebar").innerText = usuarioEmail || "-";
+        document.getElementById("apiKeySidebar").innerText = apiKey || "-";
+        document.getElementById("clienteNomeTopo").innerText = usuarioEmail || "-";
+        document.getElementById("emailDashboard").innerText = usuarioEmail || "-";
+        document.getElementById("usuarioIdDashboard").innerText = usuarioId || "-";
+        document.getElementById("apiKeyBox").innerText = apiKey || "Ainda não carregada.";
+    }
+
+    async function enviarArquivo() {
+        const file = document.getElementById("fileInput").files[0];
+
+        if (!file) {
+            document.getElementById("resultado").innerHTML = '<span class="erro">Escolha um arquivo primeiro.</span>';
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("arquivo", file);
+
+        const res = await fetch("/selar", {
+            method: "POST",
+            headers: {
+                "Authorization": "Bearer " + tokenSessao
+            },
+            body: formData
+        });
+
+        const data = await res.json();
+
+        // 🚫 LIMITE ESGOTADO
+        if (data.erro === "limite_excedido") {
+            document.getElementById("resultado").innerHTML = `
+                <div class="upgrade-box">
+                    <div class="upgrade-icon">🚫</div>
+                    <h3 class="upgrade-title">Limite atingido</h3>
+                    <p class="upgrade-text">
+                        Você utilizou todos os créditos do plano atual.
+                    </p>
+                    <div class="upgrade-highlight">
+                        Desbloqueie novas selagens, DNA e proteção contínua.
+                    </div>
+                    <button class="btn-upgrade" onclick="window.open('/upgrade', '_blank')">
+                        Fazer Upgrade Agora
+                    </button>
+                </div>
+            `;
+
+            return;
+        }
+
+        if (!res.ok) {
+            document.getElementById("resultado").innerHTML = `<span class="erro">Erro: ${data.detail}</span>`;
+            return;
+        }
+
+        let html = `
+<b>Status:</b> ${data.status}
+
+<b>Arquivo:</b> ${data.nome_arquivo}
+
+<b>Selo:</b> ${data.selo_id}
+
+<b>Hash:</b> ${data.hash_sha256}
+
+<b>Link:</b> ${data.link_validacao}
+
+<b>DNA:</b> ${data.dna_status}
+        `;
+
+        html += `
+<div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+    <button class="btn-primary" onclick="window.open('${data.certidao_url}', '_blank')">Baixar Certidão PDF</button>
+</div>
+        `;
+
+        if (data.dna_arquivo_url) {
+            html += `
+<div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+    <button class="btn-secondary" onclick="window.open('${data.dna_arquivo_url}', '_blank')">Abrir Imagem com DNA</button>
+</div>
+            `;
+        }
+
+        document.getElementById("resultado").innerHTML = html;
+        document.getElementById("qrArea").innerHTML = `<img src="${data.qr_code_url}?t=${Date.now()}" width="220">`;
+
+        await carregarStatusApi();
+        await buscarRegistros();
+    }
+
+    async function buscarRegistros() {
+        const res = await fetch("/meus-registros", {
+            headers: {
+                "Authorization": "Bearer " + tokenSessao
+            }
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            document.getElementById("listaRegistros").innerHTML = `<span class="erro">Erro: ${data.detail}</span>`;
+            return;
+        }
+
+        if (!data.length) {
+            document.getElementById("listaRegistros").innerHTML = "Nenhum registro encontrado.";
+            return;
+        }
+
+        let html = "";
+
+        data.forEach(item => {
+            html += `
+                <div class="registro-item">
+                    <div><b>Arquivo:</b> ${item.nome_arquivo}</div>
+                    <div><b>Selo:</b> ${item.selo_id}</div>
+                    <div><b>Status:</b> ${item.status}</div>
+                    <div><b>Hash:</b> ${item.hash_sha256}</div>
+                    <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
+                        <button class="btn-secondary" onclick="window.open('/verificar/${item.selo_id}', '_blank')">Verificar</button>
+                        <button class="btn-primary" onclick="window.open('/certidao/${item.selo_id}', '_blank')">Certidão PDF</button>
+                        <button class="btn-secondary" onclick="window.open('/dna/arquivo/${item.selo_id}', '_blank')">Arquivo DNA</button>
+                    </div>
+                </div>
+            `;
+        });
+
+        document.getElementById("listaRegistros").innerHTML = html;
+    }
+
+    async function verificarDNAUpload() {
+        const file = document.getElementById("dnaFileInput").files[0];
+
+        if (!file) {
+            document.getElementById("dnaResultado").innerHTML = '<span class="erro">Escolha uma imagem primeiro.</span>';
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("arquivo", file);
+
+        const res = await fetch("/dna/verificar-upload", {
+            method: "POST",
+            body: formData
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            document.getElementById("dnaResultado").innerHTML = `<span class="erro">Erro: ${data.detail}</span>`;
+            return;
+        }
+
+        if (!data.encontrado) {
+            document.getElementById("dnaResultado").innerHTML = data.mensagem;
+            return;
+        }
+
+        if (data.encontrado && !data.validado) {
+            document.getElementById("dnaResultado").innerHTML = `
+<b>DNA detectado:</b> sim
+
+<b>Validação:</b> não confirmada
+
+<b>Mensagem:</b> ${data.mensagem}
+            `;
+            return;
+        }
+
+        document.getElementById("dnaResultado").innerHTML = `
+<b>DNA detectado:</b> sim
+
+<b>Validação:</b> confirmada
+
+<b>Mensagem:</b> ${data.mensagem}
+
+<b>Selo original:</b> ${data.selo_id}
+
+<b>Arquivo original:</b> ${data.nome_arquivo_original}
+
+<b>Hash:</b> ${data.hash_sha256}
+
+<div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+    <button class="btn-secondary" onclick="window.open('${data.link_validacao}', '_blank')">Abrir Validação</button>
+    <button class="btn-primary" onclick="window.open('${data.certidao_url}', '_blank')">Baixar Certidão</button>
+</div>
+        `;
+    }
+
+    async function carregarStatusApi() {
+        const res = await fetch("/api/status", {
+            headers: {
+                "Authorization": "Bearer " + tokenSessao
+            }
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            document.getElementById("statusApi").innerHTML = `<span class="erro">Erro: ${data.detail}</span>`;
+            return;
+        }
+
+        document.getElementById("statusApi").innerHTML = `
+            <p><strong>Email:</strong> ${data.email}</p>
+            <p><strong>Plano:</strong> ${data.plano}</p>
+            <p><strong>Uso:</strong> ${data.uso_api} / ${data.limite_api}</p>
+            <p><strong>Restante:</strong> ${data.restante}</p>
+        `;
+
+        document.getElementById("usoApiTopo").innerText = `${data.uso_api} / ${data.limite_api}`;
+        document.getElementById("saldoRestanteTopo").innerText = data.restante;
+        document.getElementById("limiteApiDashboard").innerText = data.limite_api;
+        document.getElementById("restanteApiDashboard").innerText = data.restante;
+        document.getElementById("planoTopo").innerText = data.plano;
+        document.getElementById("dashboardMensagem").innerText =
+            `Conta carregada com sucesso. Você ainda possui ${data.restante} selagens disponíveis no plano atual.`;
+    }
+
+    async function fazerUpgradePlano(plano) {
+        const res = await fetch(`/upgrade-plano?plano=${encodeURIComponent(plano)}`, {
+            method: "POST",
+            headers: {
+                "Authorization": "Bearer " + tokenSessao
+            }
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            document.getElementById("upgradeResultado").innerHTML = `<span class="erro">Erro: ${data.detail}</span>`;
+            return;
+        }
+
+        document.getElementById("upgradeResultado").innerHTML = `
+            <span class="ok">${data.mensagem}</span><br>
+            Plano atual: ${data.plano}<br>
+            Limite: ${data.limite_api}<br>
+            Uso atual: ${data.uso_api}<br>
+            Restante: ${data.restante}
+        `;
+
+        await carregarStatusApi();
+    }
+
+async function carregarFraude() {
+    try {
+        const resAlertas = await fetch("/rastreamento/alertas");
+        const alertas = await resAlertas.json();
+
+        const resSuspeitos = await fetch("/rastreamento/fraude/suspeitos");
+        const suspeitos = await resSuspeitos.json();
+
+        if (!Array.isArray(alertas) || alertas.length === 0) {
+            document.getElementById("fraudeAlertasLista").innerHTML = "Nenhum alerta crítico no momento.";
+        } else {
+            let htmlAlertas = "";
+
+            alertas.forEach(item => {
+                htmlAlertas += `
+                    <div class="registro-item">
+                        <div><b>Resultado:</b> ${item.resultado}</div>
+                        <div><b>Selo:</b> ${item.selo_id || "-"}</div>
+                        <div><b>IP:</b> ${item.ip || "-"}</div>
+                        <div><b>Rota:</b> ${item.rota || "-"}</div>
+                        <div><b>Quando:</b> ${item.quando || "-"}</div>
+                        <div><b>Observação:</b> ${item.observacao || "-"}</div>
+                    </div>
+                `;
+            });
+
+            document.getElementById("fraudeAlertasLista").innerHTML = htmlAlertas;
+        }
+
+        if (!Array.isArray(suspeitos) || suspeitos.length === 0) {
+            document.getElementById("fraudeSuspeitosLista").innerHTML = "Nenhum suspeito identificado.";
+            document.getElementById("fraudeTotalSuspeitos").innerText = "0";
+            document.getElementById("fraudeMaiorScore").innerText = "0";
+            document.getElementById("fraudeStatusGeral").innerText = "OK";
+        } else {
+            let htmlSuspeitos = "";
+            let maiorScore = 0;
+
+            suspeitos.forEach(item => {
+                const motivos = Array.isArray(item.motivos) ? item.motivos.join(", ") : "-";
+                const ips = Array.isArray(item.ips_unicos) ? item.ips_unicos.join(", ") : "-";
+                const score = item.score_risco || 0;
+
+                if (score > maiorScore) {
+                    maiorScore = score;
+                }
+
+                htmlSuspeitos += `
+                    <div class="registro-item">
+                        <div><b>Referência:</b> ${item.referencia}</div>
+                        <div><b>Total de acessos:</b> ${item.total_acessos}</div>
+                        <div><b>Total de IPs:</b> ${item.total_ips}</div>
+                        <div><b>IPs:</b> ${ips}</div>
+                        <div><b>Tentativas inválidas:</b> ${item.tentativas_invalidas}</div>
+                        <div><b>DNA inválido:</b> ${item.dna_invalido}</div>
+                        <div><b>Score de risco:</b> ${item.score_risco || 0}</div>
+                        <div><b>Nível de risco:</b> ${item.nivel_risco || "-"}</div>
+                        <div><b>Motivos:</b> ${motivos}</div>
+                    </div>
+                `;
+            });
+
+            document.getElementById("fraudeSuspeitosLista").innerHTML = htmlSuspeitos;
+            document.getElementById("fraudeTotalSuspeitos").innerText = suspeitos.length;
+            document.getElementById("fraudeMaiorScore").innerText = maiorScore;
+            document.getElementById("fraudeStatusGeral").innerText = maiorScore >= 20 ? "CRÍTICO" : "ATENÇÃO";
+        }
+
+        document.getElementById("fraudeAlertasCriticos").innerText = Array.isArray(alertas) ? alertas.length : 0;
+
+    } catch (erro) {
+        document.getElementById("fraudeAlertasLista").innerHTML = "Erro ao carregar alertas.";
+        document.getElementById("fraudeSuspeitosLista").innerHTML = "Erro ao carregar suspeitos.";
+        document.getElementById("fraudeStatusGeral").innerText = "ERRO";
+    }
+}
+
+mostrarTelaCorreta();
+
+if (tokenSessao) {
+    preencherDadosUsuario();
+    carregarStatusApi();
+    buscarRegistros();
+    carregarFraude();
+}
+</script>
+
+</body>
+</html>
