@@ -393,6 +393,26 @@ def registrar_usuario(email: str, senha: str, db: Session = Depends(get_db)):
         "email": novo_usuario.email
     }
 
+@app.post("/reenviar-confirmacao")
+def reenviar_confirmacao(email: str, db: Session = Depends(get_db)):
+    usuario = db.query(Usuario).filter(Usuario.email == email).first()
+
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado.")
+
+    if usuario.email_confirmado:
+        return {"mensagem": "Este email já foi confirmado."}
+
+    if not usuario.token_confirmacao:
+        usuario.token_confirmacao = secrets.token_hex(24)
+        db.commit()
+        db.refresh(usuario)
+
+    link_confirmacao = f"{APP_BASE_URL}/confirmar-email/{usuario.token_confirmacao}"
+    enviar_email_confirmacao(usuario.email, link_confirmacao)
+
+    return {"mensagem": "Email de confirmação reenviado com sucesso."}
+
 @app.post("/login")
 def login_usuario(email: str, senha: str, db: Session = Depends(get_db)):
     usuario = db.query(Usuario).filter(Usuario.email == email).first()
