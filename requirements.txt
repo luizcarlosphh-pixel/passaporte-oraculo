@@ -10,3 +10,4 @@ pillow
 pypdf
 python-docx
 bcrypt
+psycopg2-binary
