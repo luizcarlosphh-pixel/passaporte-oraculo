@@ -503,6 +503,19 @@ def selar_arquivo(
 ):
     try:
         usuario = obter_usuario_por_token(authorization, db)
+
+        # 🔄 RESET AUTOMÁTICO (30 dias)
+        from datetime import datetime, timedelta
+
+        if usuario.ultimo_reset is None:
+            usuario.ultimo_reset = datetime.utcnow()
+            db.commit()
+
+        if datetime.utcnow() - usuario.ultimo_reset >= timedelta(days=30):
+            usuario.uso_api = 0
+            usuario.ultimo_reset = datetime.utcnow()
+            db.commit()
+
         # 🚫 BLOQUEIO POR LIMITE
         if usuario.uso_api >= usuario.limite_api:
             raise HTTPException(
