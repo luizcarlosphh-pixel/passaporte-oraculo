@@ -46,19 +46,6 @@ from services import (
 
 Base.metadata.create_all(bind=engine)
 
-from sqlalchemy import text
-
-def adicionar_coluna_ultimo_reset():
-    with engine.connect() as conn:
-        try:
-            conn.execute(text("ALTER TABLE usuarios ADD COLUMN ultimo_reset TIMESTAMP"))
-            conn.commit()
-            print("COLUNA ultimo_reset criada")
-        except Exception as e:
-            print("Coluna já existe ou erro:", e)
-
-adicionar_coluna_ultimo_reset()
-
 def criar_planos_padrao():
     db = Session(bind=engine)
     try:
