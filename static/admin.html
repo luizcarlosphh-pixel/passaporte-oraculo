@@ -96,6 +96,8 @@ async function carregarAdmin() {
                 <td>
                     <button onclick="darCredito(${u.id})">+10</button>
                     <button onclick="bloquear(${u.id})">Bloquear</button>
+                    <button onclick="trocarPlano(${u.id}, 'pro')">Pro</button>
+                    <button onclick="trocarPlano(${u.id}, 'enterprise')">Enterprise</button>
                     <button onclick="excluirUsuario(${u.id})">Excluir</button>
                 </td>
                 <td>${u.limite_api}</td>
@@ -111,6 +113,20 @@ async function darCredito(userId) {
     await fetch(`/admin/add-credito/${userId}?valor=10`, {
         method: "POST"
     });
+
+    carregarAdmin();
+}
+
+async function trocarPlano(userId, plano) {
+    const params = new URLSearchParams(window.location.search);
+    const adminToken = params.get("admin_token");
+
+    const res = await fetch(`/admin/trocar-plano?user_id=${userId}&nome_plano=${plano}&admin_token=${adminToken}`, {
+        method: "POST"
+    });
+
+    const data = await res.json();
+    alert(data.mensagem || data.detail);
 
     carregarAdmin();
 }
