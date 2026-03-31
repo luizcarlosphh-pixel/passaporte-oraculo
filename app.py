@@ -886,7 +886,7 @@ def status_api(
 ):
     usuario = obter_usuario_por_token(authorization, db)
 
-    restante = usuario.limite_api - usuario.uso_api
+    restante = max(0, usuario.limite_api - usuario.uso_api)
 
     return {
         "email": usuario.email,
