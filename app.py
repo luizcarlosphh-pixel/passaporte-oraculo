@@ -399,11 +399,13 @@ def registrar_usuario(email: str, senha: str, db: Session = Depends(get_db)):
 
     token_confirmacao = secrets.token_hex(24)
 
+    plano_free = db.query(Plano).filter(Plano.nome == "free").first()
+
     novo_usuario = Usuario(
         email=email_limpo,
         senha_hash=gerar_hash_senha(senha),
         plano="free",
-        limite_api=10,
+        limite_api=plano_free.limite_api if plano_free else 10,
         uso_api=0,
         email_confirmado=False,
         token_confirmacao=token_confirmacao
