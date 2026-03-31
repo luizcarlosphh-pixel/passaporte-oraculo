@@ -505,10 +505,10 @@ def selar_arquivo(
         usuario = obter_usuario_por_token(authorization, db)
         # 🚫 BLOQUEIO POR LIMITE
         if usuario.uso_api >= usuario.limite_api:
-            return {
-                "erro": "limite_excedido",
-                "mensagem": "Você atingiu seu limite. Faça upgrade do plano."
-            }
+            raise HTTPException(
+                status_code=403,
+                detail="Limite de uso atingido. Faça upgrade do plano."
+            )
 
         caminho_salvo = salvar_arquivo_upload(arquivo, arquivo.filename)
         hash_sha256 = gerar_hash_arquivo(caminho_salvo)
@@ -690,6 +690,7 @@ def selar_arquivo(
         print("ERRO GERAL /selar:", str(e))
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Erro ao selar arquivo: {str(e)}")
+
 @app.get("/dna/arquivo/{selo_id}")
 def baixar_arquivo_dna(selo_id: str):
     caminho = BASE_DIR / "uploads" / f"{selo_id}_dna.png"
