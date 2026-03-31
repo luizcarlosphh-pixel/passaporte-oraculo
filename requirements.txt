@@ -10,4 +10,5 @@ pillow
 pypdf
 python-docx
 bcrypt
+requests
 psycopg2-binary

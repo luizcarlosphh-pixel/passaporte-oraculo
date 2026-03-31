@@ -7,6 +7,8 @@ import shutil
 import os
 import smtplib
 import secrets
+import requests
+
 
 
 from email.mime.text import MIMEText
@@ -82,40 +84,35 @@ def obter_usuario_por_api_key(x_api_key: str | None, db: Session) -> Usuario:
     return usuario
 
 def enviar_email_confirmacao(destino: str, link_confirmacao: str):
-    try:
-        EMAIL_USER = os.getenv("EMAIL_USER")
-        EMAIL_PASS = os.getenv("EMAIL_PASS")
+    RESEND_API_KEY = os.getenv("RESEND_API_KEY")
 
-        if not EMAIL_USER or not EMAIL_PASS:
-            raise Exception("EMAIL_USER ou EMAIL_PASS não configurados.")
+    if not RESEND_API_KEY:
+        raise Exception("RESEND_API_KEY não configurada!")
 
-        assunto = "Confirme seu email - Passaporte Oráculo"
+    response = requests.post(
+        "https://api.resend.com/emails",
+        headers={
+            "Authorization": f"Bearer {RESEND_API_KEY}",
+            "Content-Type": "application/json",
+        },
+        json={
+            "from": "onboarding@resend.dev",
+            "to": destino,
+            "subject": "Confirme seu email - Passaporte Oráculo",
+            "html": f"""
+                <h2>Confirme sua conta</h2>
+                <p>Clique no botão abaixo:</p>
+                <a href="{link_confirmacao}" style="padding:10px;background:#000;color:#fff;text-decoration:none;">
+                    Confirmar Email
+                </a>
+            """,
+        },
+    )
 
-        corpo = f"""
-Olá,
+    if response.status_code != 200:
+        raise Exception(f"Erro ao enviar email: {response.text}")
 
-Clique no link abaixo para confirmar sua conta no Passaporte Oráculo:
-
-{link_confirmacao}
-
-Se você não criou esta conta, ignore este email.
-"""
-
-        msg = MIMEText(corpo)
-        msg["Subject"] = assunto
-        msg["From"] = EMAIL_USER
-        msg["To"] = destino
-
-        servidor = smtplib.SMTP("smtp.gmail.com", 587)
-        servidor.starttls()
-        servidor.login(EMAIL_USER, EMAIL_PASS)
-        servidor.send_message(msg)
-        servidor.quit()
-
-        print("EMAIL DE CONFIRMAÇÃO ENVIADO PARA:", destino)
-
-    except Exception as e:
-        print("ERRO AO ENVIAR EMAIL DE CONFIRMAÇÃO:", str(e))
+    print("EMAIL ENVIADO COM RESEND:", destino)
 
 def registrar_log_rastreamento(
     db: Session,
