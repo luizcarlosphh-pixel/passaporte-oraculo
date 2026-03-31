@@ -1669,3 +1669,23 @@ def bloquear_usuario(user_id: int, db: Session = Depends(get_db)):
 
     return {"ok": True}
 
+
+@app.delete("/admin/excluir-usuario")
+def excluir_usuario(
+    user_id: int,
+    admin_token: str = Query(...),
+    db: Session = Depends(get_db)
+):
+    if admin_token != ADMIN_TOKEN:
+        raise HTTPException(status_code=403, detail="Acesso negado.")
+
+    usuario = db.query(Usuario).filter(Usuario.id == user_id).first()
+
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado.")
+
+    db.delete(usuario)
+    db.commit()
+
+    return {"mensagem": "Usuário excluído com sucesso"}
+
