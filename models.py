@@ -3,6 +3,7 @@ from datetime import datetime
 from database import Base
 
 
+
 class RegistroAutenticidade(Base):
     __tablename__ = "registros_autenticidade"
 
@@ -27,6 +28,7 @@ class Usuario(Base):
     token = Column(String(255), unique=True, index=True, nullable=True)
     api_key = Column(String(255), unique=True, index=True, nullable=True)
     
+    ultimo_reset = Column(DateTime, default=datetime.utcnow)
 
     plano = Column(String(50), default="gratuito")
     limite_api = Column(Integer, default=10)
