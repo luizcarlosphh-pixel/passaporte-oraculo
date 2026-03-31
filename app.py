@@ -907,7 +907,8 @@ def status_api(
         "uso_api": usuario.uso_api,
         "limite_api": usuario.limite_api,
         "restante": restante,
-        "api_key": usuario.api_key
+        "api_key": usuario.api_key,
+        "ultimo_reset": usuario.ultimo_reset
     }
 
 
