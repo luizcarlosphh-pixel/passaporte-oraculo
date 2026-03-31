@@ -1730,3 +1730,34 @@ def listar_planos(
         }
         for p in planos
     ]
+
+@app.post("/admin/trocar-plano")
+def trocar_plano_usuario(
+    user_id: int,
+    nome_plano: str,
+    admin_token: str = Query(...),
+    db: Session = Depends(get_db)
+):
+    if admin_token != ADMIN_TOKEN:
+        raise HTTPException(status_code=403, detail="Acesso negado.")
+
+    usuario = db.query(Usuario).filter(Usuario.id == user_id).first()
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado.")
+
+    plano = db.query(Plano).filter(Plano.nome == nome_plano, Plano.ativo == True).first()
+    if not plano:
+        raise HTTPException(status_code=404, detail="Plano não encontrado.")
+
+    usuario.plano = plano.nome
+    usuario.limite_api = plano.limite_api
+    db.commit()
+    db.refresh(usuario)
+
+    return {
+        "mensagem": "Plano atualizado com sucesso.",
+        "usuario_id": usuario.id,
+        "email": usuario.email,
+        "plano": usuario.plano,
+        "limite_api": usuario.limite_api
+    }
