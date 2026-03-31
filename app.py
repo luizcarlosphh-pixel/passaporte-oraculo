@@ -1777,3 +1777,26 @@ def trocar_plano_usuario(
         "plano": usuario.plano,
         "limite_api": usuario.limite_api
     }
+
+@app.post("/upgrade")
+def upgrade_usuario(
+    plano: str,
+    authorization: str | None = Header(default=None),
+    db: Session = Depends(get_db)
+):
+    usuario = obter_usuario_por_token(authorization, db)
+
+    plano_db = db.query(Plano).filter(Plano.nome == plano, Plano.ativo == True).first()
+    if not plano_db:
+        raise HTTPException(status_code=404, detail="Plano não encontrado.")
+
+    usuario.plano = plano_db.nome
+    usuario.limite_api = plano_db.limite_api
+    db.commit()
+    db.refresh(usuario)
+
+    return {
+        "mensagem": "Plano atualizado com sucesso.",
+        "plano": usuario.plano,
+        "limite_api": usuario.limite_api
+    }
