@@ -51,3 +51,11 @@ class LogRastreamento(Base):
     resultado = Column(String, nullable=False)
     observacao = Column(Text, nullable=True)
     criado_em = Column(DateTime, default=datetime.utcnow)
+
+class Plano(Base):
+    __tablename__ = "planos"
+
+    id = Column(Integer, primary_key=True)
+    nome = Column(String(50), unique=True)
+    limite_api = Column(Integer)
+    ativo = Column(Boolean, default=True)
