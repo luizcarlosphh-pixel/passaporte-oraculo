@@ -68,7 +68,7 @@ th {
 
 <script>
 async function carregarAdmin() {
-    const res = await fetch("/admin");
+    const res = await fetch("/admin-dados");
     const data = await res.json();
 
     document.getElementById("totalUsuarios").innerText = data.total_usuarios;

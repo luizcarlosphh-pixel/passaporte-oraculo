@@ -312,7 +312,7 @@ def home():
         raise HTTPException(status_code=500, detail=f"Arquivo não encontrado: {INDEX_FILE}")
     return FileResponse(INDEX_FILE)
 
-@app.get("/admin")
+@app.get("/admin-dados")
 def admin_panel(db: Session = Depends(get_db)):
     usuarios = db.query(Usuario).all()
     registros = db.query(RegistroAutenticidade).all()
