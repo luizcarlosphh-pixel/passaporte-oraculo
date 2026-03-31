@@ -1794,3 +1794,33 @@ def upgrade_usuario(
         "plano": usuario.plano,
         "limite_api": usuario.limite_api
     }
+
+@app.post("/confirmar-pagamento")
+def confirmar_pagamento(
+    email: str,
+    plano: str,
+    admin_token: str = Query(...),
+    db: Session = Depends(get_db)
+):
+    if admin_token != ADMIN_TOKEN:
+        raise HTTPException(status_code=403, detail="Acesso negado.")
+
+    usuario = db.query(Usuario).filter(Usuario.email == email).first()
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado.")
+
+    plano_db = db.query(Plano).filter(Plano.nome == plano, Plano.ativo == True).first()
+    if not plano_db:
+        raise HTTPException(status_code=404, detail="Plano não encontrado.")
+
+    usuario.plano = plano_db.nome
+    usuario.limite_api = plano_db.limite_api
+    db.commit()
+    db.refresh(usuario)
+
+    return {
+        "mensagem": "Pagamento confirmado e plano liberado com sucesso.",
+        "email": usuario.email,
+        "plano": usuario.plano,
+        "limite_api": usuario.limite_api
+    }
