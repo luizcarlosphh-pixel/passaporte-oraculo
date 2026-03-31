@@ -54,6 +54,7 @@ app = FastAPI(
 BASE_DIR = Path(__file__).resolve().parent
 INDEX_FILE = BASE_DIR / "static" / "index.html"
 APP_BASE_URL = os.getenv("APP_BASE_URL", "http://127.0.0.1:8000")
+ADMIN_TOKEN = os.getenv("ADMIN_TOKEN")
 
 
 def obter_usuario_por_token(authorization: str | None, db: Session) -> Usuario:
@@ -313,7 +314,10 @@ def home():
     return FileResponse(INDEX_FILE)
 
 @app.get("/admin-dados")
-def admin_panel(db: Session = Depends(get_db)):
+def admin_panel(admin_token: str | None = Header(default=None), db: Session = Depends(get_db)):
+    if admin_token != ADMIN_TOKEN:
+        raise HTTPException(status_code=403, detail="Acesso negado.")
+
     usuarios = db.query(Usuario).all()
     registros = db.query(RegistroAutenticidade).all()
 
@@ -342,7 +346,10 @@ def admin_panel(db: Session = Depends(get_db)):
     }
 
 @app.get("/admin-ui")
-def admin_ui():
+def admin_ui(admin_token: str | None = Header(default=None)):
+    if admin_token != ADMIN_TOKEN:
+        raise HTTPException(status_code=403, detail="Acesso negado.")
+
     return FileResponse("static/admin.html")
 
 @app.get("/landing")
