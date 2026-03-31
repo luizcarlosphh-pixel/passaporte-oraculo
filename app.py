@@ -1671,17 +1671,6 @@ def analisar_comportamento(db: Session = Depends(get_db)):
 
     return analise
 
-@app.get("/upgrade")
-def upgrade_plano():
-    return {
-        "mensagem": "Para liberar mais usos, faça o pagamento via Pix.",
-        "pix": {
-            "chave": "SEU_PIX_AQUI",
-            "valor": "29.90",
-            "descricao": "Upgrade Plano Oráculo PRO"
-        }
-    }
-
 @app.post("/admin/add-credito/{user_id}")
 def add_credito(user_id: int, valor: int, db: Session = Depends(get_db)):
     usuario = db.query(Usuario).filter(Usuario.id == user_id).first()
