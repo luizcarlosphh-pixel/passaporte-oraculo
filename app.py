@@ -314,7 +314,10 @@ def home():
     return FileResponse(INDEX_FILE)
 
 @app.get("/admin-dados")
-def admin_panel(admin_token: str | None = Header(default=None), db: Session = Depends(get_db)):
+def admin_panel(
+    admin_token: str | None = None,
+    db: Session = Depends(get_db)
+):
     if admin_token != ADMIN_TOKEN:
         raise HTTPException(status_code=403, detail="Acesso negado.")
 
@@ -327,7 +330,6 @@ def admin_panel(admin_token: str | None = Header(default=None), db: Session = De
     return {
         "total_usuarios": total_usuarios,
         "total_registros": total_registros,
-
         "usuarios": [
             {
                 "id": u.id,
@@ -346,7 +348,7 @@ def admin_panel(admin_token: str | None = Header(default=None), db: Session = De
     }
 
 @app.get("/admin-ui")
-def admin_ui(admin_token: str | None = Header(default=None)):
+def admin_ui(admin_token: str | None = None):
     if admin_token != ADMIN_TOKEN:
         raise HTTPException(status_code=403, detail="Acesso negado.")
 
