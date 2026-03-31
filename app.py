@@ -24,7 +24,7 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.utils import ImageReader
 
 from database import Base, engine, get_db
-from models import RegistroAutenticidade, Usuario, LogRastreamento
+from models import RegistroAutenticidade, Usuario, LogRastreamento, Plano
 from services import (
     salvar_arquivo_upload,
     gerar_hash_arquivo,
@@ -45,6 +45,26 @@ from services import (
 )
 
 Base.metadata.create_all(bind=engine)
+
+def criar_planos_padrao():
+    db = Session(bind=engine)
+    try:
+        planos = [
+            {"nome": "free", "limite_api": 10},
+            {"nome": "pro", "limite_api": 1000},
+            {"nome": "enterprise", "limite_api": 999999},
+        ]
+
+        for p in planos:
+            existe = db.query(Plano).filter(Plano.nome == p["nome"]).first()
+            if not existe:
+                db.add(Plano(nome=p["nome"], limite_api=p["limite_api"], ativo=True))
+
+        db.commit()
+    finally:
+        db.close()
+
+criar_planos_padrao()
 
 app = FastAPI(
     title="Passaporte Oráculo",
@@ -382,7 +402,7 @@ def registrar_usuario(email: str, senha: str, db: Session = Depends(get_db)):
     novo_usuario = Usuario(
         email=email_limpo,
         senha_hash=gerar_hash_senha(senha),
-        plano="gratuito",
+        plano="free",
         limite_api=10,
         uso_api=0,
         email_confirmado=False,
@@ -1689,3 +1709,22 @@ def excluir_usuario(
 
     return {"mensagem": "Usuário excluído com sucesso"}
 
+@app.get("/admin/planos")
+def listar_planos(
+    admin_token: str = Query(...),
+    db: Session = Depends(get_db)
+):
+    if admin_token != ADMIN_TOKEN:
+        raise HTTPException(status_code=403, detail="Acesso negado.")
+
+    planos = db.query(Plano).all()
+
+    return [
+        {
+            "id": p.id,
+            "nome": p.nome,
+            "limite_api": p.limite_api,
+            "ativo": p.ativo
+        }
+        for p in planos
+    ]
