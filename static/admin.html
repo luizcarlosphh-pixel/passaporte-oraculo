@@ -68,7 +68,10 @@ th {
 
 <script>
 async function carregarAdmin() {
-    const res = await fetch("/admin-dados?admin_token=ORACULO_ADMIN_2026_X9K7P4L2");
+    const params = new URLSearchParams(window.location.search);
+    const adminToken = params.get("admin_token");
+
+    const res = await fetch(`/admin-dados?admin_token=${adminToken}`);
     const data = await res.json();
 
     document.getElementById("totalUsuarios").innerText = data.total_usuarios;
