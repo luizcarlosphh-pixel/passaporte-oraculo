@@ -1657,3 +1657,11 @@ def bloquear_usuario(user_id: int, db: Session = Depends(get_db)):
     db.commit()
 
     return {"ok": True}
+
+@app.post("/admin/limpar-tudo")
+def limpar_tudo(db: Session = Depends(get_db)):
+    db.query(LogRastreamento).delete()
+    db.query(RegistroAutenticidade).delete()
+    db.query(Usuario).delete()
+    db.commit()
+    return {"mensagem": "BANCO LIMPO COM SUCESSO"}
