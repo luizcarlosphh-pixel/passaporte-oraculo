@@ -1797,17 +1797,11 @@ def upgrade_usuario(
 
 @app.post("/confirmar-pagamento")
 def confirmar_pagamento(
-    email: str,
     plano: str,
-    admin_token: str = Query(...),
+    authorization: str | None = Header(default=None),
     db: Session = Depends(get_db)
 ):
-    if admin_token != ADMIN_TOKEN:
-        raise HTTPException(status_code=403, detail="Acesso negado.")
-
-    usuario = db.query(Usuario).filter(Usuario.email == email).first()
-    if not usuario:
-        raise HTTPException(status_code=404, detail="Usuário não encontrado.")
+    usuario = obter_usuario_por_token(authorization, db)
 
     plano_db = db.query(Plano).filter(Plano.nome == plano, Plano.ativo == True).first()
     if not plano_db:
