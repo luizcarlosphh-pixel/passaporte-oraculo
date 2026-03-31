@@ -1779,10 +1779,15 @@ def upgrade_usuario(
     if not plano_db:
         raise HTTPException(status_code=404, detail="Plano não encontrado.")
 
-    usuario.plano = plano_db.nome
-    usuario.limite_api = plano_db.limite_api
-    db.commit()
-    db.refresh(usuario)
+    return {
+        "mensagem": "Para liberar o plano, realize o pagamento.",
+        "plano": plano_db.nome,
+        "valor": 29.90,
+        "pix": {
+            "chave": "SEU_PIX_AQUI",
+            "descricao": f"Upgrade plano {plano_db.nome}"
+        }
+    }
 
     return {
         "mensagem": "Plano atualizado com sucesso.",
