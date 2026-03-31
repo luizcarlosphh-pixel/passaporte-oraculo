@@ -57,6 +57,7 @@ th {
             <tr>
                 <th>ID</th>
                 <th>Email</th>
+                <th>Plano</th>
                 <th>Uso</th>
                 <th>Ações</th>
                 <th>Limite</th>
@@ -92,6 +93,7 @@ async function carregarAdmin() {
             <tr style="${estiloLinha}">
                 <td>${u.id}</td>
                 <td>${u.email}</td>
+                <td>${u.plano || "-"}</td>
                 <td>${u.uso_api}</td>
                 <td>
                     <button onclick="darCredito(${u.id})">+10</button>

@@ -356,6 +356,7 @@ def admin_panel(
             {
                 "id": u.id,
                 "email": u.email,
+                "plano": u.plano,
                 "uso_api": u.uso_api,
                 "limite_api": u.limite_api,
                 "percentual_uso": (u.uso_api / u.limite_api) * 100 if u.limite_api > 0 else 0,
