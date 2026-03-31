@@ -16,6 +16,7 @@ from email_validator import validate_email, EmailNotValidError
 from fastapi import FastAPI, UploadFile, File, Depends, HTTPException, Header, Request
 from fastapi.responses import FileResponse, HTMLResponse, StreamingResponse
 from sqlalchemy.orm import Session
+from fastapi import Query
 
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.colors import HexColor, white
@@ -313,9 +314,10 @@ def home():
         raise HTTPException(status_code=500, detail=f"Arquivo não encontrado: {INDEX_FILE}")
     return FileResponse(INDEX_FILE)
 
+
 @app.get("/admin-dados")
 def admin_panel(
-    admin_token: str | None = None,
+    admin_token: str = Query(...),
     db: Session = Depends(get_db)
 ):
     if admin_token != ADMIN_TOKEN:
@@ -348,7 +350,7 @@ def admin_panel(
     }
 
 @app.get("/admin-ui")
-def admin_ui(admin_token: str | None = None):
+def admin_ui(admin_token: str = Query(...)):
     if admin_token != ADMIN_TOKEN:
         raise HTTPException(status_code=403, detail="Acesso negado.")
 
