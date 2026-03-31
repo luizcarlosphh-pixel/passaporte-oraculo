@@ -588,6 +588,8 @@ def selar_arquivo(
         link_validacao = f"{APP_BASE_URL}/verificar/{novo_registro.selo_id}"
         caminho_qr = f"uploads/{novo_registro.selo_id}.png"
         gerar_qrcode(link_validacao, caminho_qr)
+        print("QR GERADO EM:", caminho_qr)
+        print("QR EXISTS?:", os.path.exists(caminho_qr))
 
         dna_status = "nao_aplicado"
         dna_arquivo_url = None
@@ -609,6 +611,8 @@ def selar_arquivo(
 
                 caminho_dna = gerar_arquivo_dna_path(novo_registro.selo_id)
                 inserir_dna_imagem(caminho_salvo, caminho_dna, dna_texto)
+                print("DNA EXISTS?:", os.path.exists(caminho_dna))
+                print("DNA PATH:", caminho_dna)
 
                 dna_status = "embutido"
                 dna_arquivo_url = f"/dna/arquivo/{novo_registro.selo_id}"
